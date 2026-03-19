@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GCSE OCR J277 – Arrays (Interactive Lesson)</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --panel:#111824;
+    --panel2:#0f1620;
+    --text:#e8eef7;
+    --muted:#a9b7cc;
+    --accent:#27c26a;
+    --accent2:#4adf86;
+    --warn:#ffcc00;
+    --bad:#ff5c77;
+    --ok:#4adf86;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    --r:16px;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:var(--sans); color:var(--text);
+    background:radial-gradient(1200px 800px at 20% 10%, rgba(39,194,106,.20), transparent 60%),
+    radial-gradient(900px 700px at 90% 20%, rgba(74,223,134,.14), transparent 55%),
+    linear-gradient(180deg, #070a0f 0%, #0b0f14 100%);
+    min-height:100vh;
+  }
+  header{
+    position:sticky; top:0; z-index:10;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(180deg, rgba(11,15,20,.92), rgba(11,15,20,.70));
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:18px 18px;}
+  .titleRow{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+  .brand{display:flex; gap:12px; align-items:center;}
+  .pill{
+    width:44px; height:44px; border-radius:12px;
+    background:linear-gradient(135deg, rgba(39,194,106,.25), rgba(74,223,134,.08));
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow: var(--shadow);
+    display:grid; place-items:center;
+    font-weight:800; color:var(--accent2);
+  }
+  h1{margin:0; font-size:20px; letter-spacing:.2px;}
+  .sub{margin:2px 0 0; color:var(--muted); font-size:13px;}
+  .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  button, .toggle{
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.15s ease;
+    font-weight:650;
+  }
+  button:hover{transform:translateY(-1px); background:rgba(255,255,255,.08)}
+  button:active{transform:translateY(0px)}
+  .toggle{display:flex; gap:10px; align-items:center;}
+  .toggle input{width:18px; height:18px; accent-color:var(--accent)}
+  main{padding:18px 0 60px;}
+  .grid{display:grid; grid-template-columns: 320px 1fr; gap:16px;}
+  @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+  nav{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--r);
+    box-shadow: var(--shadow);
+    padding:14px;
+  }
+  .navTitle{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;}
+  .navTitle h2{margin:0; font-size:14px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.12em;}
+  .navList{display:flex; flex-direction:column; gap:6px;}
+  .navItem{
+    padding:10px 10px; border-radius:12px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    display:flex; align-items:center; gap:10px;
+  }
+  .navItem:hover{background:rgba(255,255,255,.06)}
+  .dot{width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.25)}
+  .navItem.active .dot{background:var(--accent)}
+  .navItem.active{border-color: rgba(39,194,106,.55); background:rgba(39,194,106,.10)}
+  section.card{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--r);
+    box-shadow: var(--shadow);
+    padding:18px;
+  }
+  .kicker{
+    display:inline-flex; gap:8px; align-items:center;
+    background:rgba(39,194,106,.12);
+    border:1px solid rgba(39,194,106,.35);
+    color:var(--accent2);
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.04em;
+    margin-bottom:10px;
+  }
+  h3{margin:8px 0 8px; font-size:20px;}
+  p{color:var(--muted); line-height:1.55; margin:8px 0 10px;}
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start;}
+  .col{flex:1 1 280px;}
+  .panel{
+    background:rgba(0,0,0,.25);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:14px;
+  }
+  .panel h4{margin:0 0 8px; font-size:14px; color:var(--text)}
+  .hint{font-size:13px; color:var(--muted)}
+  .code{
+    font-family:var(--mono);
+    background:#0a0f16;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:12px;
+    overflow:auto;
+    line-height:1.45;
+    font-size:13px;
+  }
+  .code .kw{color:#7aa8ff}
+  .code .str{color:#ffcc7a}
+  .code .cm{color:#7f90aa}
+  .code .num{color:#c1a7ff}
+  textarea, input[type="text"], input[type="number"], select{
+    width:100%;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    padding:10px 12px;
+    outline:none;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  textarea{min-height:150px; resize:vertical}
+  .btnRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+  .small{font-size:12px; color:var(--muted)}
+  .badge{
+    display:inline-block; padding:4px 8px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.05);
+    color:var(--muted);
+    font-size:12px; font-weight:700;
+  }
+  .divider{height:1px; background:rgba(255,255,255,.08); margin:14px 0;}
+  .arrayViz{display:grid; grid-template-columns: repeat(auto-fit, minmax(74px, 1fr)); gap:8px;}
+  .cell{
+    border-radius:14px; padding:10px; border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.04);
+    text-align:center;
+  }
+  .idx{font-size:11px; color:var(--muted); margin-bottom:6px}
+  .val{font-weight:800}
+  .log{
+    white-space:pre-wrap; font-family:var(--mono);
+    background:#071018;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px;
+    padding:12px;
+    min-height:120px;
+    color:#d7e6ff;
+  }
+  .teacherOnly{display:none}
+  .teacher .teacherOnly{display:block}
+  details{
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px;
+    padding:10px 12px;
+    background:rgba(255,255,255,.03);
+  }
+  summary{cursor:pointer; font-weight:800; color:var(--text)}
+  .footer{color:var(--muted); font-size:12px; margin-top:12px}
+  .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
+  @media (max-width: 820px){ .twoCol{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="titleRow">
+      <div class="brand">
+        <div class="pill">A</div>
+        <div>
+          <h1>GCSE OCR J277 – Arrays (Interactive Lesson)</h1>
+          <div class="sub">Unit 7 Programming • One- and two-dimensional arrays • Linear search • Bubble sort</div>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="toggle" title="Show answers + teacher notes">
+          <input id="teacherMode" type="checkbox"/>
+          Teacher mode
+        </label>
+        <button id="btnReset" title="Reset all activities">Reset</button>
+        <button id="btnPrint" title="Print or save as PDF">Print</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <nav>
+      <div class="navTitle">
+        <h2>Sections</h2>
+        <span class="badge" id="progressBadge">0/8</span>
+      </div>
+      <div class="navList" id="navList"></div>
+      <div class="divider"></div>
+      <div class="small">
+        Tip: use <span class="badge">Teacher mode</span> to reveal model answers and guidance.
+      </div>
+    </nav>
+
+    <div id="content"></div>
+  </div>
+
+  <div class="footer">
+    Built as a single offline HTML file (no internet required). Suitable for Google Classroom upload or a school VLE.
+  </div>
+</main>
+
+<script>
+const SECTIONS = [
+  { id:"starter", title:"Starter: 500 players?", icon:"⚔️" },
+  { id:"arrays", title:"What is an array?", icon:"🧺" },
+  { id:"indexing", title:"Indexes & length", icon:"🔢" },
+  { id:"looping", title:"Looping through arrays", icon:"🔁" },
+  { id:"task1", title:"Worksheet Task 1: Months & temperatures", icon:"🌡️" },
+  { id:"search", title:"Linear search (stop early)", icon:"🔎" },
+  { id:"bubble", title:"Bubble sort + swapping", icon:"🫧" },
+  { id:"twoD", title:"2D arrays: marks & totals", icon:"🧮" },
+];
+
+const state = {
+  done: new Set(),
+  teacher:false,
+  current: "starter",
+  usernames: ["psmith","ltorvalds","pwatts","sjones","mpatel","bwright","mgreen","dthomas","nwhite","fdavies"],
+  searchTarget: "mpatel",
+  bubble: ["Sam","Ron","Tom","Bob","Mo"],
+  bubblePass: 0,
+  bubbleJ: 0,
+  marks: [
+    [12,14,8,7,17],
+    [6,8,5,3,13],
+    [16,15,9,10,18]
+  ],
+};
+
+function $(sel, root=document){ return root.querySelector(sel); }
+function el(tag, attrs={}, ...children){
+  const n = document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>{
+    if(k==="class") n.className=v;
+    else if(k==="html") n.innerHTML=v;
+    else if(k.startsWith("on") && typeof v==="function") n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k,v);
+  });
+  for(const c of children){
+    if(c==null) continue;
+    n.appendChild(typeof c==="string" ? document.createTextNode(c) : c);
+  }
+  return n;
+}
+
+function highlightPython(code){
+  const esc = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return esc
+    .replace(/(^|\s)(#.*)$/gm, '$1<span class="cm">$2</span>')
+    .replace(/(for|while|if|elif|else|break|continue|in|range|len|True|False|and|or|not|print|input|int|float|str)/g, '<span class="kw">$1</span>')
+    .replace(/([0-9]+(\.[0-9]+)?)/g, '<span class="num">$1</span>')
+    .replace(/(".*?"|'.*?')/g, '<span class="str">$1</span>');
+}
+
+function setDone(id){
+  state.done.add(id);
+  updateProgress();
+}
+
+function updateProgress(){
+  $("#progressBadge").textContent = `${state.done.size}/${SECTIONS.length}`;
+}
+
+function renderNav(){
+  const nav = $("#navList");
+  nav.innerHTML = "";
+  SECTIONS.forEach(s=>{
+    const item = el("div", {class:"navItem"+(state.current===s.id?" active":""), onclick:()=>go(s.id)},
+      el("div",{class:"dot"}),
+      el("div",{}, `${s.icon} ${s.title}`)
+    );
+    nav.appendChild(item);
+  });
+}
+
+function go(id){
+  state.current = id;
+  renderNav();
+  renderSection();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function sectionShell(kicker, title, body){
+  return el("section",{class:"card"},
+    el("div",{class:"kicker"}, kicker),
+    el("h3",{}, title),
+    body
+  );
+}
+
+function renderStarter(){
+  const body = el("div",{},
+    el("p",{}, "Starter (30 seconds): Imagine you’re coding a medieval battle game. You start with ",
+      el("span",{class:"badge"},"2 players"), " — easy. Now imagine ",
+      el("span",{class:"badge"},"500 players"), "."
+    ),
+    el("p",{}, "Question: What’s the smartest way to store 500 player names so you can print them, search them, or sort them?"),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Pick one"),
+        el("div",{style:"display:grid; gap:8px;"},
+          el("button",{onclick:()=>starterChoose('A')}, "A) Make 500 variables: player1, player2, ... player500"),
+          el("button",{onclick:()=>starterChoose('B')}, "B) Use ONE structure to hold many names (an array / list)"),
+          el("button",{onclick:()=>starterChoose('C')}, "C) Write names on paper and hope for the best")
+        ),
+        el("div",{class:"small", style:"margin-top:10px"},
+          "Tip: if you want to loop (repeat) over items, you want option B."
+        )
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"Why this matters"),
+        el("p",{class:"hint"},"Arrays/lists let you store many values under ONE name and access each item by its position (index). That makes printing, searching and sorting realistic — even with 500 players.")
+      )
+    ),
+    el("div",{class:"log", id:"starterFeedback"},"Choose an option…"),
+    el("details",{class:"teacherOnly"},
+      el("summary",{},"Teacher note"),
+      el("p",{},"This replaces the earlier free-text box. New students often suggest playerName1..500. Use that to motivate “one name holding many values”.")
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone('starter'); alert('Starter complete ✅'); }},"Mark as done")
+    )
+  );
+
+  window.starterChoose = function(choice){
+    const out = $("#starterFeedback");
+    if(!out) return;
+    if(choice === "B"){
+      out.textContent = "✅ Correct. Using an array/list keeps your code short and lets you loop through the names.";
+    } else if(choice === "A"){
+      out.textContent = "⚠️ This works, but it’s a nightmare: huge code, easy mistakes, and hard to loop/search/sort properly.";
+    } else {
+      out.textContent = "😅 Creative… but not exactly Python.";
+    }
+  }
+
+  return sectionShell("Starter", "From 2 players to 500", body);
+}
+
+
+function renderArrays(){
+  const body = el("div",{},
+    el("p",{}, "An ", el("b",{},"array"), " (or a Python ", el("b",{},"list"), ") stores ",
+      el("b",{},"many values under one name"), ". Each value lives in a position called an ", el("b",{},"index"), "."
+    ),
+    el("p",{}, "Below is a tiny list of usernames. Click a cell to select it and see its index."),
+    el("div",{class:"twoCol"},
+      el("div",{class:"panel"},
+        el("h4",{},"Click a cell"),
+        el("div",{class:"arrayViz", id:"vizIntro"})
+      ),
+      el("div",{class:"panel"},
+        el("h4",{},"What did you click?"),
+        el("div",{class:"log", id:"introLog"},"Click a cell to reveal its index…"),
+        el("div",{class:"divider"}),
+        el("div",{class:"code", html: highlightPython(
+`# A Python list (similar idea to an array)
+usernames = ["psmith", "ltorvalds", "pwatts", "sjones", "mpatel"]
+
+print(usernames[0])      # first item (index 0)
+print(usernames[4])      # fifth item (index 4)
+print(len(usernames))    # how many items?`
+        )})
+      )
+    ),
+    el("details",{class:"panel"},
+      el("summary",{},"Quick check (tap to reveal)"),
+      el("p",{},"If there are 5 items, the last index is ", el("b",{},"4"), "."),
+      el("p",{},"If you see usernames[0], it means the ", el("b",{},"first"), " item.")
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone('arrays'); alert('Done ✅'); }},"Mark as done")
+    )
+  );
+
+  setTimeout(()=>{
+    const box = $("#vizIntro");
+    const log = $("#introLog");
+    if(!box || !log) return;
+    box.innerHTML="";
+    const demo = ["psmith","ltorvalds","pwatts","sjones","mpatel"];
+    demo.forEach((v,i)=>{
+      box.appendChild(el("div",{class:"cell", onclick:()=>{
+        log.textContent = `You clicked index ${i} → value = "${v}"`;
+      }},
+        el("div",{class:"idx"}, `index ${i}`),
+        el("div",{class:"val"}, v)
+      ));
+    });
+  },0);
+
+  return sectionShell("New concept", "What is an array (list)?", body);
+}
+
+
+function renderIndexing(){
+  const body = el("div",{},
+    el("p",{}, "Indexing is how we pick ONE item from a list. Most languages start counting at ",
+      el("b",{},"0"), "."
+    ),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Practice: ‘What’s at index…?’"),
+        el("p",{class:"hint"},"Type an index number (0 to 9). The tool will show the value from the list."),
+        el("input",{id:"pickIndex", type:"number", value:0, min:0, max:9}),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>showIndexValue()},"Show value"),
+          el("button",{onclick:()=>randomIndex()},"Random index")
+        ),
+        el("div",{class:"log", id:"indexLog"},"(try it)")
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"The list we’re using"),
+        el("div",{class:"arrayViz", id:"vizUsernames"})
+      ),
+    ),
+    el("details",{class:"teacherOnly"},
+      el("summary",{},"Teacher note"),
+      el("p",{},"This replaces the earlier ‘edit values’ box. First exposure should focus on: list → index → value. Editing can come later.")
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone('indexing'); alert('Done ✅'); }},"Mark as done")
+    )
+  );
+
+  setTimeout(()=>{
+    const box = $("#vizUsernames");
+    if(!box) return;
+    box.innerHTML="";
+    state.usernames.forEach((v,i)=>{
+      box.appendChild(el("div",{class:"cell"},
+        el("div",{class:"idx"}, `index ${i}`),
+        el("div",{class:"val"}, v || "—")
+      ));
+    });
+    showIndexValue();
+  },0);
+
+  window.showIndexValue = function(){
+    const idx = parseInt($("#pickIndex").value,10);
+    if(Number.isNaN(idx) || idx < 0 || idx >= state.usernames.length){
+      $("#indexLog").textContent = "Pick an index from 0 to " + (state.usernames.length-1);
+      return;
+    }
+    $("#indexLog").textContent = `usernames[${idx}] = "${state.usernames[idx]}"`;
+  }
+
+  window.randomIndex = function(){
+    const idx = Math.floor(Math.random() * state.usernames.length);
+    $("#pickIndex").value = idx;
+    showIndexValue();
+  }
+
+  return sectionShell("Indexing", "Index → value", body);
+}
+
+
+function updateUsernamesFromInputs(){
+  state.usernames[0] = $("#u0").value.trim() || state.usernames[0];
+  state.usernames[1] = $("#u1").value.trim() || state.usernames[1];
+  state.usernames[2] = $("#u2").value.trim() || state.usernames[2];
+  renderSection();
+}
+
+function renderLooping(){
+  const body = el("div",{},
+    el("p",{}, "Use a FOR loop to process every item from index 0 to length - 1."),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Run a loop"),
+        el("div",{class:"row"},
+          el("div",{class:"col"},
+            el("label",{class:"small"},"Start index"),
+            el("input",{id:"loopStart", type:"number", value:0, min:0, max:9})
+          ),
+          el("div",{class:"col"},
+            el("label",{class:"small"},"End index (inclusive)"),
+            el("input",{id:"loopEnd", type:"number", value:9, min:0, max:9})
+          )
+        ),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>runLoop()},"Run"),
+          el("button",{onclick:()=>{ $("#loopLog").textContent=""; }},"Clear log")
+        ),
+        el("div",{class:"code", html: highlightPython(
+`for i in range(0, len(usernames)):
+    print(i, usernames[i])`
+        )})
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"Output log"),
+        el("div",{class:"log", id:"loopLog"},"(click Run)")
+      ),
+    ),
+    el("details",{class:"teacherOnly"},
+      el("summary",{},"Teacher note: common range mistake"),
+      el("p",{},"range stops before the end. Use range(len(list)) so you include the last item.")
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone("looping"); alert("Done ✅"); }},"Mark as done")
+    )
+  );
+  return sectionShell("FOR loops", "Loop through an array", body);
+}
+
+function runLoop(){
+  const s = parseInt($("#loopStart").value,10);
+  const e = parseInt($("#loopEnd").value,10);
+  if(Number.isNaN(s)||Number.isNaN(e)||s<0||e>9||s>e) return alert("Pick start/end 0–9.");
+  const lines = [];
+  for(let i=s;i<=e;i++){
+    lines.push(`${i}: ${state.usernames[i] ?? "—"}`);
+  }
+  $("#loopLog").textContent = lines.join("\n");
+}
+
+function renderTask1(){
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const body = el("div",{},
+    el("p",{}, "Worksheet Task 1: input values into an array and print month + value. Then: rainfall totals, average and count above average."),
+    el("div",{class:"twoCol"},
+      el("div",{class:"panel"},
+        el("h4",{},"Part A: temperatures"),
+        el("div",{class:"row"},
+          el("div",{class:"col"}, el("label",{class:"small"},"Month"),
+            (function(){ const sel = el("select",{id:"tempMonth"}); months.forEach(m=>sel.appendChild(el("option",{value:m}, m))); return sel; })()
+          ),
+          el("div",{class:"col"}, el("label",{class:"small"},"Temperature"),
+            el("input",{id:"tempValue", type:"number", step:"0.1", placeholder:"e.g. 15.0"})
+          )
+        ),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>addTemp()},"Add/Update"),
+          el("button",{onclick:()=>showTempOutput()},"Generate output"),
+          el("button",{onclick:()=>{ window.__temps = {}; $("#tempLog").textContent=""; }},"Reset temps")
+        ),
+        el("div",{class:"log", id:"tempLog"},"(no data yet)")
+      ),
+      el("div",{class:"panel"},
+        el("h4",{},"Part B: rainfall"),
+        el("div",{class:"row"},
+          el("div",{class:"col"}, el("label",{class:"small"},"Month"),
+            (function(){ const sel = el("select",{id:"rainMonth"}); months.forEach(m=>sel.appendChild(el("option",{value:m}, m))); return sel; })()
+          ),
+          el("div",{class:"col"}, el("label",{class:"small"},"Rainfall (mm)"),
+            el("input",{id:"rainValue", type:"number", step:"0.1", placeholder:"e.g. 42.3"})
+          )
+        ),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>addRain()},"Add/Update"),
+          el("button",{onclick:()=>calcRain()},"Calculate"),
+          el("button",{onclick:()=>{ window.__rain = {}; $("#rainLog").textContent=""; }},"Reset rainfall")
+        ),
+        el("div",{class:"log", id:"rainLog"},"(no data yet)")
+      )
+    ),
+    el("details",{class:"teacherOnly"},
+      el("summary",{},"Model solutions (Python)"),
+      el("div",{class:"code", html: highlightPython(
+`# Temperatures (input + print)
+months = ["January","February","March","April","May","June",
+          "July","August","September","October","November","December"]
+temperatures = [0.0] * 12
+for i in range(len(months)):
+    temperatures[i] = float(input("Enter temperature for " + months[i] + ": "))
+for i in range(len(months)):
+    print(months[i], temperatures[i])
+
+# Rainfall (totals, average, above-average count)
+rainfall = [0.0] * 12
+annual = 0.0
+for i in range(len(months)):
+    rainfall[i] = float(input("Enter rainfall for " + months[i] + " (mm): "))
+    annual += rainfall[i]
+average = annual / len(months)
+above = 0
+for i in range(len(months)):
+    if rainfall[i] > average:
+        above += 1
+    print(months[i] + ": " + str(rainfall[i]))
+print("Annual rainfall:", round(annual, 1))
+print("Monthly average:", round(average, 1))
+print("Months above average:", above)`
+      )})
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone("task1"); alert("Done ✅"); }},"Mark as done")
+    )
+  );
+  return sectionShell("Worksheet 4 • Task 1", "Months: input, print, totals & averages", body);
+}
+
+function addTemp(){
+  window.__temps = window.__temps || {};
+  const m = $("#tempMonth").value;
+  const v = parseFloat($("#tempValue").value);
+  if(Number.isNaN(v)) return alert("Enter a number.");
+  window.__temps[m]=v;
+  $("#tempValue").value="";
+  $("#tempLog").textContent = `Saved ${m} = ${v.toFixed(1)}`;
+}
+function showTempOutput(){
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  window.__temps = window.__temps || {};
+  const lines = [];
+  for(const m of months){
+    lines.push(window.__temps[m] !== undefined ? `${m} ${Number(window.__temps[m]).toFixed(1)}` : `${m} (not entered)`);
+  }
+  $("#tempLog").textContent = lines.join("\n");
+}
+function addRain(){
+  window.__rain = window.__rain || {};
+  const m = $("#rainMonth").value;
+  const v = parseFloat($("#rainValue").value);
+  if(Number.isNaN(v)) return alert("Enter a number.");
+  window.__rain[m]=v;
+  $("#rainValue").value="";
+  $("#rainLog").textContent = `Saved ${m} = ${v.toFixed(1)} mm`;
+}
+function calcRain(){
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  window.__rain = window.__rain || {};
+  let total = 0;
+  let entered = 0;
+  for(const m of months){
+    if(window.__rain[m] !== undefined){
+      total += window.__rain[m];
+      entered++;
+    }
+  }
+  if(entered===0) return alert("Enter at least one rainfall value.");
+  const avg = total / entered;
+  let above=0;
+  const lines=[];
+  for(const m of months){
+    if(window.__rain[m] !== undefined){
+      const v = window.__rain[m];
+      if(v>avg) above++;
+      lines.push(`${m}: ${v.toFixed(1)} mm`);
+    } else {
+      lines.push(`${m}: (not entered)`);
+    }
+  }
+  lines.push("");
+  lines.push(`Total (entered months): ${total.toFixed(1)} mm`);
+  lines.push(`Average (entered months): ${avg.toFixed(1)} mm`);
+  lines.push(`Months above average: ${above}`);
+  $("#rainLog").textContent = lines.join("\n");
+}
+
+function renderSearch(){
+  const body = el("div",{},
+    el("p",{}, "Linear search checks items in sequence. Stop early using a WHILE loop once found."),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Try searching"),
+        el("input",{id:"searchInput", type:"text", value: state.searchTarget, placeholder:"e.g. mpatel"}),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>runSearch(false)},"Search (FOR)"),
+          el("button",{onclick:()=>runSearch(true)},"Search (WHILE stop early)"),
+          el("button",{onclick:()=>{$("#searchLog").textContent="";}},"Clear log")
+        )
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"Log"),
+        el("div",{class:"log", id:"searchLog"},"(run a search)")
+      )
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone("search"); alert("Done ✅"); }},"Mark as done")
+    )
+  );
+  return sectionShell("Searching", "Linear search (stop early)", body);
+}
+
+function runSearch(stopEarly){
+  const target = $("#searchInput").value.trim();
+  if(!target) return alert("Type a username.");
+  const log = [];
+  let found=false;
+  let checks=0;
+
+  if(!stopEarly){
+    for(let i=0;i<state.usernames.length;i++){
+      checks++;
+      log.push(`Check ${checks}: usernames[${i}] == "${state.usernames[i]}" ?`);
+      if(state.usernames[i] === target){
+        found=true;
+        log.push(`✅ Found at index ${i}`);
+      }
+    }
+  } else {
+    let i=0;
+    while(!found && i<state.usernames.length){
+      checks++;
+      log.push(`Check ${checks}: usernames[${i}] == "${state.usernames[i]}" ?`);
+      if(state.usernames[i] === target){
+        found=true;
+        log.push(`✅ Found at index ${i} (stopped early)`);
+        break;
+      }
+      i++;
+    }
+  }
+  if(!found) log.push(`❌ Not found after ${checks} checks.`);
+  $("#searchLog").textContent = log.join("\n");
+}
+
+function renderBubble(){
+  const body = el("div",{},
+    el("p",{}, "Bubble sort compares neighbours and swaps if needed."),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Stepper"),
+        el("div",{class:"arrayViz", id:"bubbleViz"}),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>bubbleStep()},"Step"),
+          el("button",{onclick:()=>bubblePass()},"Finish pass"),
+          el("button",{onclick:()=>bubbleAuto()},"Auto sort"),
+          el("button",{onclick:()=>resetBubble()},"Reset")
+        ),
+        el("div",{class:"small"}, "Pass: ", el("span",{class:"badge", id:"bubblePassBadge"},"0"),
+          " • j: ", el("span",{class:"badge", id:"bubbleJBadge"},"0")
+        )
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"Log"),
+        el("div",{class:"log", id:"bubbleLog"},"(step through the sort)")
+      )
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone("bubble"); alert("Done ✅"); }},"Mark as done")
+    )
+  );
+  setTimeout(renderBubbleViz,0);
+  return sectionShell("Sorting", "Bubble sort + swapping", body);
+}
+
+function renderBubbleViz(){
+  const box = $("#bubbleViz");
+  if(!box) return;
+  box.innerHTML="";
+  const arr = state.bubble;
+  const a = state.bubbleJ;
+  const b = state.bubbleJ + 1;
+  arr.forEach((v,i)=>{
+    const hi = (i===a || i===b);
+    box.appendChild(el("div",{class:"cell", style: hi ? "border-color: rgba(39,194,106,.65); background: rgba(39,194,106,.10)" : ""},
+      el("div",{class:"idx"}, `index ${i}`),
+      el("div",{class:"val"}, v)
+    ));
+  });
+  $("#bubblePassBadge").textContent = String(state.bubblePass);
+  $("#bubbleJBadge").textContent = String(state.bubbleJ);
+}
+
+function bubbleLog(line){
+  const log = $("#bubbleLog");
+  log.textContent = (log.textContent==="(step through the sort)") ? line : (log.textContent + "\n" + line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function bubbleCompareAndSwap(){
+  const n = state.bubble.length;
+  const i = state.bubblePass;
+  const j = state.bubbleJ;
+  const limit = n - i - 1;
+  if(j >= limit) return false;
+
+  const x = state.bubble[j], y = state.bubble[j+1];
+  bubbleLog(`Compare "${x}" and "${y}"`);
+  if(x > y){
+    bubbleLog(`  "${x}" > "${y}" → swap`);
+    state.bubble[j] = y;
+    state.bubble[j+1] = x;
+  } else {
+    bubbleLog(`  already in order`);
+  }
+  state.bubbleJ++;
+  return true;
+}
+
+function bubbleStep(){
+  const n = state.bubble.length;
+  if(state.bubblePass >= n-1){
+    bubbleLog("✅ Sorting complete.");
+    renderBubbleViz();
+    return;
+  }
+  const progressed = bubbleCompareAndSwap();
+  if(!progressed){
+    bubbleLog(`End of pass ${state.bubblePass}.`);
+    state.bubblePass++;
+    state.bubbleJ = 0;
+  }
+  renderBubbleViz();
+}
+
+function bubblePass(){
+  const n = state.bubble.length;
+  if(state.bubblePass >= n-1) return;
+  while(state.bubblePass < n-1){
+    const progressed = bubbleCompareAndSwap();
+    if(!progressed){
+      bubbleLog(`End of pass ${state.bubblePass}.`);
+      state.bubblePass++;
+      state.bubbleJ = 0;
+      break;
+    }
+  }
+  renderBubbleViz();
+}
+
+function bubbleAuto(){
+  const n = state.bubble.length;
+  while(state.bubblePass < n-1){
+    const progressed = bubbleCompareAndSwap();
+    if(!progressed){
+      state.bubblePass++;
+      state.bubbleJ = 0;
+    }
+  }
+  bubbleLog("✅ Auto sort complete.");
+  renderBubbleViz();
+}
+
+function resetBubble(){
+  state.bubble = ["Sam","Ron","Tom","Bob","Mo"];
+  state.bubblePass = 0;
+  state.bubbleJ = 0;
+  const log = $("#bubbleLog");
+  if(log) log.textContent="(step through the sort)";
+  renderBubbleViz();
+}
+
+function renderTwoD(){
+  const body = el("div",{},
+    el("p",{}, "A 2D array is a grid. Example: 5 marks for each of 3 students."),
+    el("div",{class:"row"},
+      el("div",{class:"col panel"},
+        el("h4",{},"Edit marks"),
+        el("div",{id:"marksTable"}),
+        el("div",{class:"btnRow"},
+          el("button",{onclick:()=>calcTotals()},"Calculate totals"),
+          el("button",{onclick:()=>resetMarks()},"Reset")
+        )
+      ),
+      el("div",{class:"col panel"},
+        el("h4",{},"Output"),
+        el("div",{class:"log", id:"twoDLog"},"(calculate totals)")
+      )
+    ),
+    el("div",{class:"btnRow"},
+      el("button",{onclick:()=>{ setDone("twoD"); alert("Done ✅"); }},"Mark as done")
+    )
+  );
+  setTimeout(renderMarksTable,0);
+  return sectionShell("2D arrays", "Marks, totals and averages", body);
+}
+
+function renderMarksTable(){
+  const host = $("#marksTable");
+  if(!host) return;
+  host.innerHTML="";
+  const table = el("table",{style:"width:100%; border-collapse:separate; border-spacing:6px;"});
+  const head = el("tr",{},
+    el("th",{style:"text-align:left; color:var(--muted); font-size:12px; padding:6px"},"Student"),
+    ...[1,2,3,4,5].map(i=>el("th",{style:"text-align:center; color:var(--muted); font-size:12px; padding:6px"}, `M${i}`))
+  );
+  table.appendChild(head);
+
+  state.marks.forEach((row, r)=>{
+    const tr = el("tr",{}, el("td",{style:"padding:6px; font-weight:800"}, `Student ${r+1}`));
+    row.forEach((v,c)=>{
+      tr.appendChild(el("td",{style:"padding:0"},
+        el("input",{type:"number", value:v, step:"1", min:"0", max:"100",
+          oninput:(e)=>{ state.marks[r][c] = parseInt(e.target.value||"0",10); },
+          style:"text-align:center; width:100%; padding:10px 8px; border-radius:12px;"
+        })
+      ));
+    });
+    table.appendChild(tr);
+  });
+
+  host.appendChild(table);
+}
+
+function calcTotals(){
+  const lines=[];
+  state.marks.forEach((row, i)=>{
+    const total = row.reduce((a,b)=>a+b,0);
+    const avg = total/row.length;
+    lines.push(`Student ${i+1} total = ${total}`);
+    lines.push(`Student ${i+1} average = ${avg.toFixed(1)}`);
+    lines.push("");
+  });
+  $("#twoDLog").textContent = lines.join("\n").trim();
+}
+
+function resetMarks(){
+  state.marks = [
+    [12,14,8,7,17],
+    [6,8,5,3,13],
+    [16,15,9,10,18]
+  ];
+  $("#twoDLog").textContent="(calculate totals)";
+  renderMarksTable();
+}
+
+function renderSection(){
+  const host = $("#content");
+  host.innerHTML="";
+  const map = {
+    starter: renderStarter,
+    arrays: renderArrays,
+    indexing: renderIndexing,
+    looping: renderLooping,
+    task1: renderTask1,
+    search: renderSearch,
+    bubble: renderBubble,
+    twoD: renderTwoD,
+  };
+  host.appendChild(map[state.current]());
+  document.body.classList.toggle("teacher", state.teacher);
+}
+
+function resetAll(){
+  state.done = new Set();
+  state.current = "starter";
+  state.usernames = ["psmith","ltorvalds","pwatts","sjones","mpatel","bwright","mgreen","dthomas","nwhite","fdavies"];
+  resetBubble();
+  resetMarks();
+  window.__temps = {};
+  window.__rain = {};
+  updateProgress();
+  renderNav();
+  renderSection();
+}
+
+function init(){
+  renderNav();
+  renderSection();
+  updateProgress();
+
+  $("#teacherMode").addEventListener("change", (e)=>{
+    state.teacher = e.target.checked;
+    document.body.classList.toggle("teacher", state.teacher);
+  });
+
+  $("#btnReset").addEventListener("click", ()=>{
+    if(confirm("Reset all activities and progress?")) resetAll();
+  });
+
+  $("#btnPrint").addEventListener("click", ()=> window.print());
+}
+
+init();
+</script>
+</body>
+</html>
